@@ -5,7 +5,7 @@
 /**
  * 1 gcc -fno-stack-protector  -g -o auth auth_overflow.c
  *  gcc堆栈保护会：1）flag的地址在pass_buff的低地址，使得pass_buff无法覆盖flag
- *               2）会提前保存函数的返回地址，一旦通过shellcode篡改，报__stack_chk_fail
+ *               2）会提前保存函数的返回地址，一旦通过篡改，报__stack_chk_fail
  * 2 gdb auth
  *   break 17 (strcpy(pass_buff,pass);)
  *   run <any_params>

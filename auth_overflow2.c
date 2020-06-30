@@ -16,12 +16,11 @@
  *   continue
  *   获得进入check之后的堆栈布局：
  *      x/20xw $esp
- *      上一步拿到的address_of_esp，在新的布局就是pass的参数地址，然后是check函数的返回地址address_of_check_ret，然后就是局部变量的了（也有可能栈帧信息）
- *      看看局部变量pass_buff的地址和存函数返回地址的地址差多少，构造shellcode
- * 
- * 3  ./auth $(perl -e  'print "\xc5\x85\x04\x08"x10')
+ *      上一步拿到的address_of_esp，在新的布局就是pass的参数地址，然后是check函数的返回地址address_of_check_ret，然后就是旧的ebp(sfp:栈帧指针),然后就是局部变量的了
+ *      看看局部变量pass_buff的地址和存函数返回地址的地址差多少，构造溢出参数
+ * 3  ./auth2 $(perl -e  'print "\xc5\x85\x04\x08"x10')
  *   1)32位的系统地址一般没有\x0。64位有，bash传参的时候会warning，忽略\x0输入
- *   2)shellcode这里输入了10次目标地址，增加命中率
+ *   2)溢出参数这里输入了10次目标地址，增加命中率
  *   3)64位的话，地址都是8字节，这个需要考虑是否还适用
  */
 
