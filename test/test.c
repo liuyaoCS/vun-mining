@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main(){
+int main(int argc,char* argv[]){
     int i;
-    for(i=0;i<10;i++){
-        printf("hello\n");
-    }
+    char* ptr = getenv(argv[1]);
+    printf("%s will be at %p\n", argv[1], ptr);
 }
