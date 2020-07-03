@@ -3,7 +3,8 @@
 #include <string.h>
 
 int main(int argc,char* argv[]){
-    int i;
-    char* ptr = getenv(argv[1]);
-    printf("%s will be at %p\n", argv[1], ptr);
+    int i=1;
+    int j=2;
+
+    printf("i=%d j=%d\n", i,j);
 }
