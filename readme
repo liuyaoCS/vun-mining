@@ -1,12 +1,25 @@
+编译预备
+    gcc -m32 -g 
+        -fno-stack-protector 
+        -z execstack
+        -no-pie
+    /proc/sys/kernel/randomize_va_space
+        0 关闭
+        1 栈 + mmap + 共享库
+        2 堆
+
 一 缓冲区溢出：
     缓冲区溢出位置：堆栈 堆 bss
     
     1 覆盖栈中重要的变量，改变逻辑
     2 覆盖返回地址
         1）返回程序中的其他地址
+            a)源程序地址
+            b）retlibc（通常用于应对堆栈不可执行）
         2）构造shellcode，执行自己的代码
             a）通过汇编使用al之类避免出现\x0
             b）通过替换\x0为特殊字符，比如‘#’,之后汇编之类单独提取参数
+    3 覆盖建立堆栈前，入栈的函数参数
 
 二 格式化字符串攻击
     printf传参是从右向左依次入栈，如printf(fmt,arg1,arg2...)。内部执行时：首先拿到fmt，然后依次冲栈顶开始，拿参数给fmt里对应的变量
@@ -23,3 +36,22 @@
         2）更短的寄存器指令：ax al版本
         3）xor（sub可能修改寄存器flag，xor不会），inc，dec
         4) 通过esp指针获取字符串地址，从本质上避免了需要call/jump-and-call的获取字符串地址问题
+    2 恢复源程序
+        1） push return_add_orig -> ret(pop eip,call address_at_eip)
+        2） fork子进程操作自己业务
+    3 突破防火墙
+        1） 端口绑定（容易被防火墙拦截）
+            a）复制标准文件描述符：dup2（shell的输入输出都变成socketfd）
+        2） 反向连接（如果防火墙限制输出就不行了）
+        3） 借用原socketfd（完美方案）
+    4 躲避idps(多态shellcode)
+        1）偷运有效载荷 /bin/sh：编码，用的时候再解码
+        2) 隐藏nop填充：用单字节指令（加1，减1寄存器）替代
+    5 躲避应用程序入参可打印字符限制
+        1）设计将寄存器清零的方法：两个互反的可打印32位值可以将eax寄存器清零
+    6 应对不可执行堆栈
+        1）retlibc（常利用system函数）
+    7 应对随机排列堆栈空间
+        1) return-to-plt (需要代码中有system和"/bin/sh")
+        2) 爆破(暴力破解)
+        3) rop
